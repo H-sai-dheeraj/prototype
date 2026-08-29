@@ -182,19 +182,14 @@
               <li><span>Execution Location</span><strong class="kv-accent">Local</strong></li>
               <li><span>Network Environment</span><strong>On-Premise</strong></li>
               <li><span>Storage Status</span><strong>Encrypted Volume</strong></li>
-              <li><span>Total Documents Processed</span><strong>24</strong></li>
-              <li><span>Indexed Chunks</span><strong>1,842</strong></li>
+              <li><span>Total Documents Processed</span><strong id="statDocsProcessed">24</strong></li>
+              <li><span>Indexed Chunks</span><strong id="statIndexedChunks">1,842</strong></li>
+              <li><span>Last Workflow Run</span><strong id="statLastRun">2m ago</strong></li>
             </ul>
-            <div class="resource-bar">
-              <div class="resource-row">
-                <span>GPU VRAM</span><span>249.6 / 320 GB</span>
-              </div>
-              <div class="bar"><div class="bar-fill" style="width:78%"></div></div>
-              <div class="resource-row">
-                <span>Local Storage (NVMe)</span><span>4.2 / 10 TB</span>
-              </div>
-              <div class="bar"><div class="bar-fill" style="width:42%"></div></div>
-            </div>
+            <!-- Removed: fake GPU/NVMe hardware bars. n8n has no way to report
+                 real server hardware stats without a separate monitoring agent,
+                 so this panel now only shows things a workflow run can actually
+                 tell us (counts + last-run time). See fetchEnvironmentStatus() in script.js. -->
           </div>
         </div>
 
@@ -274,16 +269,16 @@
           <div class="panel">
             <div class="panel-head"><h2>Automatic Model Routing</h2></div>
             <p class="muted">Models are selected according to task requirements.</p>
-            <ul class="route-list">
-              <li>
+            <ul class="route-list" id="modelRouteList">
+              <li data-model="reasoning">
                 <div class="route-name"><span class="dot dot--pulse"></span> Reasoning (Llama 3)</div>
                 <span class="pill pill--idle">Idle</span>
               </li>
-              <li>
+              <li data-model="vision">
                 <div class="route-name"><span class="dot dot--pulse"></span> Vision (LLaVA)</div>
                 <span class="pill pill--standby">Standby</span>
               </li>
-              <li>
+              <li data-model="coding">
                 <div class="route-name"><span class="dot dot--pulse"></span> Coding (CodeLlama)</div>
                 <span class="pill pill--standby">Standby</span>
               </li>
@@ -307,17 +302,17 @@
             <h1>Agent Execution</h1>
             <p class="page-sub">Active task, run telemetry, and generated findings.</p>
           </div>
-          <span class="pill pill--processing pill--lg">Running</span>
+          <span class="pill pill--processing pill--lg" id="agentRunStatusBadge">Running</span>
         </div>
 
         <div class="panel">
           <div class="panel-head">
             <h2>Diagnostics Agent &alpha;</h2>
-            <span class="muted mono">ID: DEL-2023-884A</span>
+            <span class="muted mono" id="agentRunId">ID: DEL-2023-884A</span>
           </div>
-          <p class="task-desc">"Analyze inspection_report.pdf and prepare an approval note"</p>
+          <p class="task-desc" id="agentRunTaskDesc">"Analyze inspection_report.pdf and prepare an approval note"</p>
 
-          <div class="trace">
+          <div class="trace" id="agentRunTrace">
             <div class="trace-step is-done">
               <span class="trace-dot"></span>
               <div>
@@ -439,7 +434,9 @@
               <thead>
                 <tr><th>Filename</th><th>Type</th><th>Size</th><th>Source</th><th>Status</th></tr>
               </thead>
-              <tbody>
+              <tbody id="documentsBody">
+                <!-- Demo rows below render until fetchDocuments() in script.js
+                     is wired to a real n8n webhook, then it replaces this. -->
                 <tr>
                   <td>inspection_report.pdf</td><td>PDF</td><td>2.4 MB</td><td>Local API</td>
                   <td><span class="pill pill--success">Processed</span></td>
@@ -474,16 +471,18 @@
           <button class="btn btn--primary">+ Upload Knowledge</button>
         </div>
 
-        <div class="stat-grid stat-grid--4">
-          <div class="stat-card"><span class="stat-label">Indexed Documents</span><span class="stat-value">4</span></div>
-          <div class="stat-card"><span class="stat-label">Indexed Chunks</span><span class="stat-value">1,842</span></div>
-          <div class="stat-card"><span class="stat-label">Vector Store</span><span class="stat-value stat-value--accent">Local</span></div>
-          <div class="stat-card"><span class="stat-label">Embedding Model</span><span class="stat-value" style="font-size:1.1rem;">Vibration-Embed-v2</span></div>
+        <div class="stat-grid stat-grid--4" id="kbStatGrid">
+          <div class="stat-card"><span class="stat-label">Indexed Documents</span><span class="stat-value" id="kbIndexedDocs">4</span></div>
+          <div class="stat-card"><span class="stat-label">Indexed Chunks</span><span class="stat-value" id="kbIndexedChunks">1,842</span></div>
+          <div class="stat-card"><span class="stat-label">Vector Store</span><span class="stat-value stat-value--accent" id="kbVectorStore">Local</span></div>
+          <div class="stat-card"><span class="stat-label">Embedding Model</span><span class="stat-value" style="font-size:1.1rem;" id="kbEmbeddingModel">Vibration-Embed-v2</span></div>
         </div>
 
         <div class="panel">
           <div class="panel-head"><h2>Current Sources</h2></div>
-          <div class="kb-grid">
+          <div class="kb-grid" id="kbSourceGrid">
+            <!-- Demo cards below render until fetchKnowledgeBase() in
+                 script.js is wired to a real n8n webhook. -->
             <div class="kb-card">
               <strong>Maintenance SOP</strong>
               <span class="muted">2.4 MB &middot; Updated 2h ago</span>
@@ -551,33 +550,38 @@
             </ul>
           </div>
           <div class="panel">
-            <div class="panel-head"><h2>Hardware Telemetry</h2></div>
-            <div class="resource-bar">
-              <div class="resource-row"><span>GPU (4x A100)</span><span>78%</span></div>
-              <div class="bar"><div class="bar-fill" style="width:78%"></div></div>
-              <div class="resource-row"><span>RAM</span><span>62%</span></div>
-              <div class="bar"><div class="bar-fill" style="width:62%"></div></div>
-              <div class="resource-row"><span>NVMe Array</span><span>42%</span></div>
-              <div class="bar"><div class="bar-fill" style="width:42%"></div></div>
-            </div>
+            <div class="panel-head"><h2>Workflow Health</h2></div>
+            <ul class="kv-list">
+              <li><span>n8n Status</span><strong class="kv-accent" id="n8nStatus">Checking&hellip;</strong></li>
+              <li><span>Active Workflows</span><strong id="statActiveWorkflows">&mdash;</strong></li>
+              <li><span>Runs Today</span><strong id="statRunsToday">&mdash;</strong></li>
+              <li><span>Success Rate (24h)</span><strong id="statSuccessRate">&mdash;</strong></li>
+            </ul>
+            <!-- Removed: fake GPU/RAM/NVMe % bars. Real hardware telemetry needs
+                 a monitoring agent on the box n8n runs on (e.g. node-exporter),
+                 not something n8n itself hands back. This panel now shows only
+                 what n8n's own execution data can honestly report. -->
           </div>
         </div>
 
         <div class="panel">
           <div class="panel-head">
-            <h2>Network Activity</h2>
-            <button class="link-btn">View all</button>
+            <h2>Workflow Execution Log</h2>
+            <button class="link-btn" id="viewAllExecutions">View all</button>
           </div>
+          <!-- Renamed from "Network Activity". n8n can't see packet-level
+               firewall activity, but it CAN tell you every workflow execution
+               it ran, when, and whether it succeeded — that's the real,
+               available signal, so the table now reflects that instead of a
+               simulated allow/block firewall log. Populated by
+               fetchExecutionLog() in script.js. -->
           <div class="table-wrap">
             <table class="data-table log-table">
               <thead>
-                <tr><th>Timestamp</th><th>Service</th><th>Status</th></tr>
+                <tr><th>Timestamp</th><th>Workflow</th><th>Status</th></tr>
               </thead>
-              <tbody>
-                <tr><td>2023-10-27 14:32:01</td><td>Local Vector DB (Port 5432)</td><td><span class="pill pill--success pill--sm">Allowed</span></td></tr>
-                <tr><td>2023-10-27 14:31:15</td><td>api.openai.com (443)</td><td><span class="pill pill--danger pill--sm">Blocked</span></td></tr>
-                <tr><td>2023-10-27 14:28:44</td><td>Local Model Inference (8080)</td><td><span class="pill pill--success pill--sm">Allowed</span></td></tr>
-                <tr><td>2023-10-27 14:15:02</td><td>huggingface.co (443)</td><td><span class="pill pill--danger pill--sm">Blocked</span></td></tr>
+              <tbody id="executionLogBody">
+                <tr><td colspan="3" class="muted">Connect n8n to populate this log.</td></tr>
               </tbody>
             </table>
           </div>

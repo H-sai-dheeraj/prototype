@@ -3,60 +3,150 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Secure AI Workbench</title>
+<title>Cipher Core</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <header class="topbar">
-    <div class="brand">
-      <span class="dot dot--pulse"></span>
-      <span class="brand-text">SECURE AI WORKBENCH</span>
+  <!-- Mobile top bar -->
+  <div class="mobile-topbar">
+    <button class="icon-btn" id="menuToggle" aria-label="Open menu" aria-expanded="false">
+      <span class="hamburger"></span>
+    </button>
+    <div class="brand-mini">
+      <span class="core-dot"></span> CIPHER CORE
     </div>
-    <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">
+    <button class="icon-btn" id="themeToggleMobile" aria-label="Toggle theme">
       <svg class="icon icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
       <svg class="icon icon-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
     </button>
-  </header>
+  </div>
 
-  <main class="shell">
+  <div class="scrim" id="scrim"></div>
 
-    <!-- ============================================================
-         FILES PANEL
-    ============================================================= -->
-    <section class="files-panel" aria-label="Uploaded files">
-      <h2 class="panel-title">Files</h2>
+  <div class="shell">
 
-      <div class="dropzone" id="dropzone">
-        <svg class="icon" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14"/></svg>
-        <span>Drag files here or <em>click to upload</em></span>
-        <input type="file" id="fileInput" multiple hidden>
-      </div>
-
-      <ul class="file-list" id="fileList">
-        <li class="file-list-empty" id="fileListEmpty">No files uploaded yet.</li>
-      </ul>
-    </section>
-
-    <!-- ============================================================
-         ASK PANEL
-    ============================================================= -->
-    <section class="ask-panel" aria-label="Ask a question">
-      <div class="chat" id="chat">
-        <div class="chat-empty" id="chatEmpty">
-          Upload a file if you need to, then ask a question below.
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <span class="core-dot"></span>
+        <div class="brand-text">
+          <strong>CIPHER</strong>
+          <span>CORE</span>
         </div>
       </div>
 
-      <form class="ask-form" id="askForm">
-        <textarea id="askInput" rows="1" placeholder="Ask a question…" required></textarea>
-        <button type="submit" class="btn btn--primary" id="askBtn">Ask</button>
-      </form>
-    </section>
+      <nav class="nav" aria-label="Primary">
+        <button class="nav-item is-active" data-page="dashboard">
+          <svg class="nav-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+          Dashboard
+        </button>
+        <button class="nav-item" data-page="documents">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5"/></svg>
+          Documents
+        </button>
+        <button class="nav-item" data-page="models">
+          <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+          Models
+        </button>
+      </nav>
 
-  </main>
+      <div class="sidebar-foot">
+        <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">
+          <svg class="icon icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          <svg class="icon icon-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
+          <span>Toggle theme</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+
+      <!-- ============================================================
+           PAGE: DASHBOARD — the ask-a-question workspace
+      ============================================================= -->
+      <section class="page is-active" id="page-dashboard">
+        <div class="page-head">
+          <div>
+            <h1>Dashboard</h1>
+            <p class="page-sub">Ask a question. Cipher Core answers using whatever you've uploaded.</p>
+          </div>
+        </div>
+
+        <div class="ask-panel">
+          <div class="chat" id="chat">
+            <div class="chat-empty" id="chatEmpty">
+              Upload documents on the Documents page if you need to, then ask a question below.
+            </div>
+          </div>
+
+          <form class="ask-form" id="askForm">
+            <textarea id="askInput" rows="1" placeholder="Ask a question…" required></textarea>
+            <button type="submit" class="btn btn--primary" id="askBtn">Ask</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           PAGE: DOCUMENTS — upload / remove
+      ============================================================= -->
+      <section class="page" id="page-documents">
+        <div class="page-head">
+          <div>
+            <h1>Documents</h1>
+            <p class="page-sub">Files Cipher Core can reference when answering questions.</p>
+          </div>
+        </div>
+
+        <div class="dropzone" id="dropzone">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14"/></svg>
+          <span>Drag files here or <em>click to upload</em></span>
+          <input type="file" id="fileInput" multiple hidden>
+        </div>
+
+        <ul class="file-list" id="fileList">
+          <li class="file-list-empty" id="fileListEmpty">No documents uploaded yet.</li>
+        </ul>
+      </section>
+
+      <!-- ============================================================
+           PAGE: MODELS — static showcase, no backend needed
+      ============================================================= -->
+      <section class="page" id="page-models">
+        <div class="page-head">
+          <div>
+            <h1>Models</h1>
+            <p class="page-sub">Which model handles which kind of task. Informational only — nothing here calls a backend.</p>
+          </div>
+        </div>
+
+        <div class="model-grid">
+          <div class="model-card">
+            <span class="model-tag">Reasoning</span>
+            <h3>General Q&amp;A &amp; Document Analysis</h3>
+            <p>Reads your uploaded documents and answers questions about them, summarizes, and reasons over text-heavy content.</p>
+            <span class="model-meta">Used for: Dashboard questions, document summaries</span>
+          </div>
+          <div class="model-card">
+            <span class="model-tag">Coding</span>
+            <h3>Code Generation &amp; Review</h3>
+            <p>Writes, explains, and reviews source code and config files when a question is about code rather than documents.</p>
+            <span class="model-meta">Used for: Code-related questions</span>
+          </div>
+          <div class="model-card">
+            <span class="model-tag">Vision</span>
+            <h3>Image &amp; Scan Analysis</h3>
+            <p>Reads uploaded images, scans, and screenshots to answer questions about their visual content.</p>
+            <span class="model-meta">Used for: Uploaded images / scans</span>
+          </div>
+        </div>
+      </section>
+
+    </div> <!-- /.main -->
+  </div> <!-- /.shell -->
 
 <script src="script.js"></script>
 </body>
